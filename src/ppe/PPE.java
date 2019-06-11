@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * @author admin
  */
 public class PPE {
-
+	
 	/**
 	 * @param args the command line arguments
 	 */
@@ -44,6 +44,7 @@ public class PPE {
 		CTableMedicament tableMedicament=new CTableMedicament(bdd,tableComposant,tablePrescription,tablePresentation);
 		
 		
+		
 		/*tableMedicament.load();
 		ArrayList<CMedicament> meds=tableMedicament.getListeMedicament();
 		CMedicament m=tableMedicament.getMedicament(123456789);
@@ -52,8 +53,15 @@ public class PPE {
 		tableMedicament.insert(m);
 		*/
 		
-		tableMedicament.load();
+		/*tableMedicament.load();
 		ArrayList<CMedicament> meds=tableMedicament.getListeMedicament();
+		for(int i=0;i<meds.size();i++){
+			System.out.println("Med :--------");
+			System.out.println("depot legal: "+meds.get(i).getDepotLegal());
+			System.out.println("Nom com: "+meds.get(i).getNomCommercial());
+			System.out.println("Comp: "+meds.get(i).getComposition());
+			System.out.println("Contre Indic: "+meds.get(i).getContreIndic());
+		}
 		tableDosage.load();
 		ArrayList<CDosage> dos=tableDosage.getListeDosage();
 		tablePrescription.load();
@@ -64,6 +72,8 @@ public class PPE {
 		ArrayList<CComposant> comp=tableComposant.getListeComposant();
 		tableOffre.load();
 		ArrayList<COffre> off=tableOffre.getListeOffre();
+		*/
+		
 		//----------TEST Medicament---------------
 		/*CMedicament med=new CMedicament();
 		med.setComposition("comp1:2ml,comp2,3mg");

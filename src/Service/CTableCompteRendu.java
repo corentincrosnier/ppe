@@ -5,10 +5,8 @@
  */
 package Service;
 
-import Entite.CComposant;
 import Entite.CMedicament;
 import bdd.CBDD;
-import bdd.CParametresStockageBDD;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,35 +17,75 @@ import java.util.logging.Logger;
  *
  * @author admin
  */
-public class CTableMedicament {
+public class CTableCompteRendu {
 	protected CBDD bdd;
-    protected ArrayList<CMedicament> listeMedicament=new ArrayList();
+    //protected ArrayList<CMedicament> listeMedicament=new ArrayList();
 	protected CTableComposant tableComposant;
 	protected CTablePrescription tablePrescription;
 	protected CTablePresentation tablePresentation;
 	//protected CTableFamille tableFamille=new CTableFamille();
     
-    public CTableMedicament(){
+    public CTableCompteRendu(){
         //this.loadMedicament();
     }
 	
-	public CTableMedicament(CBDD bdd){
-        //this.loadMedicament();
-		this.bdd=bdd;
-    }
-	
-	public CTableMedicament(CBDD bdd, CTableComposant tableComposant,CTablePrescription tablePrescription, CTablePresentation tablePresentation){
+	public CTableCompteRendu(CBDD bdd){
         this.bdd=bdd;
-		this.tableComposant=tableComposant;
-		this.tablePrescription=tablePrescription;
-		this.tablePresentation=tablePresentation;
 		//this.load();
     }
-     //-----------------------------------createTable n'est pas utilisée-----
-   /* public int createTable() {
-        String req = "CREATE TABLE IF NOT EXISTS personnel(nom varchar(30), prenom varchar(30), matricule char(8) primary key, tauxHoraire float unsigned) ENGINE = InnoDB;";
+    
+	public int insert(String matriculeVis, int idPraticien, String date, String motif, String bilan) {
+        String req="INSERT INTO rapport_visite(RAP_DATE_RAPPORT_VISITE,RAP_BILAN_RAPPORT_VISITE,RAP_MOTIF_RAPPORT_VISITE,VIS_MATRICULE_VISITEUR,PRA_NUM_PRATICIEN) value('"
+				+date+"','"
+				+bilan+"','"
+				+motif+"','"
+				+matriculeVis+"','"
+				+idPraticien+"');";
         int res = -1;
         if (bdd.connecter() == true) {
+            res = bdd.executerRequeteUpdate(req);
+			/*for(int i=0;i<medicament.getListeComposant().size();i++){
+				//this.tableComposant.insert(medicament.getListeComposant().get(i));
+				bdd.executerRequeteUpdate("INSERT INTO constituer(MED_DEPOTLEGAL_MEDICAMENT,CMP_CODE_COMPOSANT,CST_QTE_CONSTITUER,CST_UNITE_CONSTITUER) VALUE('"+medicament.getDepotLegal()+"','"+medicament.getListeComposant().get(i).getCode()+"','"+medicament.getListeComposant().get(i).getQuantite()+"','"+medicament.getListeComposant().get(i).getUnite()+"')");
+			}*/
+            System.out.println("Res = " + res);
+            bdd.deconnecter();
+            //--------------Reload Table after inserting---------
+            //this.listePersonnel();
+        } else {
+            System.out.println("Connexion KO");
+        }
+        return res;
+    }
+	
+	public int getLastCR(){
+		String req = "SELECT * FROM rapport_visite ORDER BY RAP_NUM_RAPPORT_VISITE DESC;";
+        int res = -1;
+        if (bdd.connecter() == true) {
+            ResultSet rs=bdd.executerRequeteQuery(req);
+			try{
+				rs.next();
+				res=rs.getInt("RAP_NUM_RAPPORT_VISITE");
+			}catch(SQLException ex){
+				Logger.getLogger(CTableCompteRendu.class.getName()).log(Level.SEVERE, null, ex);
+			}
+            bdd.deconnecter();
+        } else {
+            System.out.println("Connexion KO");
+        }
+        return res;
+	}
+   
+	/*
+    public int delete(CMedicament medicament) {
+        String req = "DELETE FROM medicament WHERE MED_DEPOTLEGAL_MEDICAMENT="+medicament.getDepotLegal()+";";
+        int res = -1;
+        if (bdd.connecter() == true) {
+            res = bdd.executerRequeteUpdate("DELETE FROM constituer WHERE MED_DEPOTLEGAL_MEDICAMENT="+medicament.getDepotLegal()+";");
+            res = bdd.executerRequeteUpdate("DELETE FROM formuler WHERE MED_DEPOTLEGAL_MEDICAMENT="+medicament.getDepotLegal()+";");
+            res = bdd.executerRequeteUpdate("DELETE FROM interagir WHERE MED_DEPOTLEGAL_MEDICAMENT="+medicament.getDepotLegal()+";");
+            res = bdd.executerRequeteUpdate("DELETE FROM interagir WHERE MED_DEPOTLEGAL_MEDICAMENT_INTERAGIR="+medicament.getDepotLegal()+";");
+            res = bdd.executerRequeteUpdate("DELETE FROM prescrire WHERE MED_DEPOTLEGAL_MEDICAMENT="+medicament.getDepotLegal()+";");
             res = bdd.executerRequeteUpdate(req);
             System.out.println("Res = " + res);
             bdd.deconnecter();
@@ -55,9 +93,9 @@ public class CTableMedicament {
             System.out.println("Connexion KO");
         }
         return res;
-    }*/
-    
-    public int insert(CMedicament medicament) {
+    }
+	
+	public int insert(CMedicament medicament) {
         String req="insert into medicament(MED_DEPOTLEGAL_MEDICAMENT,MED_NOMCOMMERCIAL_MEDICAMENT,MED_COMPOSITION_MEDICAMENT,MED_EFFETS_MEDICAMENT,MED_CONTREINDIC_MEDICAMENT,MED_PRIXECHANTILLON_MEDICAMENT,FAM_CODE_FAMILLE) value('"
                 +medicament.getDepotLegal()+"','"
 				+medicament.getNomCommercial()+"','"
@@ -134,115 +172,7 @@ public class CTableMedicament {
             System.out.println("Connexion KO");
         }
         return res;
-    }
-	
-    public int update(CMedicament medicament) {
-        //int index=-1;
-        /*for (int i = 0; i < listePersonnels.size(); i++) {
-            if(personnel.getMatricule().equals(listePersonnels.get(i).getMatricule())){
-                System.out.println("Le nouveau matricule éxiste déjà.");
-                return -1;
-            }
-            else if(oldMatricule.equals(listePersonnels.get(i).getMatricule()))
-                index=i;
-        }*/
-        /*if(index==-1){
-            System.out.println("Le matricule n'a pas été trouvé.");
-            return -1;
-        }*/
-
-		//gestion des modif d'arraylist like listeComposant
-		/*CMedicament tmpMed=getMedicament(medicament.getDepotLegal());
-		if(tmpMed.getListeComposant().equals(medicament.getListeComposant())){
-			System.out.println("EQUAL COMPONENTSS///§§§!!!!");
-		}
-		else{
-			System.out.println("UNNNNNNEQUALLLLL");
-		}
-		String req = "UPDATE medicament SET"
-                + " MED_NOMCOMMERCIAL_MEDICAMENT='"+((medicament.getNomCommercial()==null)?"":medicament.getNomCommercial().trim().replace("'", "''"))
-                +"', MED_COMPOSITION_MEDICAMENT='"+((medicament.getComposition()==null)?"":medicament.getComposition().trim().replace("'", "''"))
-                +"', MED_EFFETS_MEDICAMENT='"+((medicament.getEffets()==null)?"":medicament.getEffets().trim().replace("'", "''"))
-                +"',MED_CONTREINDIC_MEDICAMENT='"+((medicament.getContreIndic()==null)?"":medicament.getContreIndic().trim().replace("'", "''"))
-                +"',MED_PRIXECHANTILLON_MEDICAMENT='"+medicament.getPrixEchantillon()
-                +"',FAM_CODE_FAMILLE='"+medicament.getFamilleCode()
-                +"' where MED_DEPOTLEGAL_MEDICAMENT='"+medicament.getDepotLegal()+"';";
-        int res = -1;
-        if (bdd.connecter() == true) {
-            res = bdd.executerRequeteUpdate(req);
-            System.out.println("Res = " + res);
-            bdd.deconnecter();
-            //--------------Reload Table after inserting---------
-            //this.listePersonnel();
-        } else {
-            System.out.println("Connexion KO");
-        }
-        return res;*/
-		int res=delete(medicament);
-		res=insert(medicament);
-		return res;
-    }
-    
-    public ArrayList<CMedicament> load() {
-       // int res = -1;
-	   ArrayList<CMedicament> liste=new ArrayList();
-        if (bdd.connecter() == true) {
-            //ArrayList<CPersonnels> liste=new ArrayList();
-            ResultSet rs=bdd.executerRequeteQuery("SELECT *,FAM_LIBELLE_FAMILLE FROM medicament,famille WHERE famille.FAM_CODE_FAMILLE=medicament.FAM_CODE_FAMILLE;");
-            try {
-                while(rs.next()){
-                    liste.add(rs_to_medicament(rs));
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(CTableMedicament.class.getName()).log(Level.SEVERE, null, ex);
-                return liste;
-            }
-            bdd.deconnecter();
-        } else {
-            System.out.println("Connexion KO");
-        }
-        return liste;
-    }
-	
-    public CMedicament getMedicament(int depotLegal){
-		CMedicament medicament=null;
-        if (bdd.connecter() == true) {
-            //ArrayList<CPersonnels> liste=new ArrayList();
-			ResultSet rs=bdd.executerRequeteQuery("SELECT *,FAM_LIBELLE_FAMILLE FROM medicament,famille WHERE famille.FAM_CODE_FAMILLE=medicament.FAM_CODE_FAMILLE AND medicament.MED_DEPOTLEGAL_MEDICAMENT="+depotLegal+";");
-			try {
-                while(rs.next()){
-                    medicament=rs_to_medicament(rs);
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(CTableMedicament.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
-            }
-            bdd.deconnecter();
-        } else {
-            System.out.println("Connexion KO");
-        }
-        return medicament;
-    }
-	
-	public ArrayList<CMedicament> listMedicamentMin(){
-        ArrayList<CMedicament> liste=new ArrayList();
-        if (bdd.connecter()==true) {
-            //ArrayList<CPersonnels> liste=new ArrayList();
-            ResultSet rs=bdd.executerRequeteQuery("SELECT * FROM medicament;");
-            try {
-                while(rs.next()){
-                    liste.add(rs_to_medicamentMin(rs));
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(CTableMedicament.class.getName()).log(Level.SEVERE, null, ex);
-                return liste;
-            }
-            bdd.deconnecter();
-        } else {
-            System.out.println("Connexion KO");
-        }
-        return liste;
-    }
+    }*/
     
     public CMedicament rs_to_medicament(ResultSet rs) throws SQLException{
         CMedicament medicament=new CMedicament();
@@ -277,14 +207,6 @@ public class CTableMedicament {
 		medicament.setListePresentation(this.tablePresentation.fetchPresentation(medicament.getDepotLegal()));
         return medicament;
     }
-	
-	public CMedicament rs_to_medicamentMin(ResultSet rs) throws SQLException{
-        CMedicament medicament=new CMedicament();
-        medicament.setDepotLegal(rs.getInt("MED_DEPOTLEGAL_MEDICAMENT"));
-        medicament.setNomCommercial(rs.getString("MED_NOMCOMMERCIAL_MEDICAMENT"));
-		
-        return medicament;
-    }
 
     public CBDD getBdd() {
         return bdd;
@@ -293,36 +215,4 @@ public class CTableMedicament {
     public void setBdd(CBDD bdd) {
         this.bdd = bdd;
     }
-    
-   /* public void printPersonnel(String matricule) {
-        for (int i = 0; i < listePersonnels.size(); i++) {
-            if (matricule.equals(listePersonnels.get(i).getMatricule())) {
-                System.out.println("Nom: " + listePersonnels.get(i).getNom());
-                System.out.println("Prénom: " + listePersonnels.get(i).getPrenom());
-                System.out.println("Matricule: " + listePersonnels.get(i).getMatricule());
-                System.out.println("Taux horaire: " + listePersonnels.get(i).getTauxHoraire());
-                System.out.println("-------------------------------------");
-                break;
-            }
-        }
-    }*/
-    
-    /*public void printAllPersonnels(){
-        for (int i = 0; i < listePersonnels.size(); i++) {
-            System.out.println("Nom: "+listePersonnels.get(i).getNom());
-            System.out.println("Prénom: "+listePersonnels.get(i).getPrenom());
-            System.out.println("Matricule: "+listePersonnels.get(i).getMatricule());
-            System.out.println("Taux horaire: "+listePersonnels.get(i).getTauxHoraire());
-            System.out.println("-------------------------------------");
-        }
-    }
-    */
-
-    public ArrayList<CMedicament> getListeMedicament() {
-        return listeMedicament;
-    }
-
-   /*public void setListePersonnels(ArrayList<CPersonnels> listePersonnels) {
-        this.listePersonnels = listePersonnels;
-    }*/
 }

@@ -138,4 +138,8 @@ public class CPraticien {
             System.out.println(specialite.get(i).getLabel());
         }
     }
+	
+	public String toString(){
+		return this.nom+" "+this.prenom;
+	}
 }

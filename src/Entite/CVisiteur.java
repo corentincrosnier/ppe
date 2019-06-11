@@ -20,6 +20,7 @@ public class CVisiteur {
 	private String adresse;
 	private String codePostal;
 	private String ville;
+	private String password;
 	private GregorianCalendar dateEmbauche;
 	private CSecteur secteur;
 	private ArrayList<CTravail> listeTravail;
@@ -120,6 +121,12 @@ public class CVisiteur {
 	public void setDepartement(CDepartement departement) {
 		this.departement = departement;
 	}
-	
-	
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }

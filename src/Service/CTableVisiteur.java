@@ -19,12 +19,31 @@ import java.util.logging.Logger;
  * @author admin
  */
 public class CTableVisiteur{
-	protected CBDD bdd=new CBDD(new CParametresStockageBDD("parametresBdd.properties"));
-    protected ArrayList<CVisiteur> listeVisiteur=new ArrayList();
+	protected CBDD bdd;
+    protected ArrayList<CVisiteur> listeVisiteur;
     
-    public CTableVisiteur(){
-        //this.listePersonnel();
+    public CTableVisiteur(CBDD bdd){
+		this.bdd=bdd;
     }
+	
+	public CVisiteur checkAuth(String name, String matricule){
+		CVisiteur visiteur=null;
+		String req="SELECT * FROM visiteur WHERE VIS_NOM_VISITEUR='"+name+"' AND VIS_MATRICULE_VISITEUR='"+matricule+"'";
+        if (bdd.connecter() == true) {
+			ResultSet rs=bdd.executerRequeteQuery(req);
+            try {
+                if(rs.next()){
+                    visiteur=rs_to_visiteur(rs);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(CTableVisiteur.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            bdd.deconnecter();
+        } else {
+            System.out.println("Connexion KO");
+        }
+        return visiteur;
+	}
      //-----------------------------------createTable n'est pas utilisée-----
    /* public int createTable() {
         String req = "CREATE TABLE IF NOT EXISTS personnel(nom varchar(30), prenom varchar(30), matricule char(8) primary key, tauxHoraire float unsigned) ENGINE = InnoDB;";
@@ -125,7 +144,8 @@ public class CTableVisiteur{
         }
         return res;
     }
-    
+    */
+	
     public CVisiteur rs_to_visiteur(ResultSet rs) throws SQLException{
         CVisiteur visiteur=new CVisiteur();
         visiteur.setNom(rs.getString("VIS_NOM_VISITEUR"));
@@ -134,18 +154,15 @@ public class CTableVisiteur{
         visiteur.setAdresse(rs.getString("VIS_ADRESSE_VISITEUR"));
         visiteur.setCodePostal(rs.getString("VIS_CP_VISITEUR"));
         visiteur.setVille(rs.getString("VIS_VILLE_VISITEUR"));
-       // visiteur.s(rs.getString("DEP_CODE_DEPARTEMENT"));
-        visiteur.setMatricule(rs.getString("SECTEUR_SEC_CODE_SECTEUR"));
-        //visiteur.setTauxHoraire(rs.getFloat("tauxHoraire"));
 		
-        visiteur.setDateEmbauche(rs.getString("VIS_DATEEMBAUCHE_VISITEUR"));
         return visiteur;
     }
-
+	
+	
     public CBDD getBdd() {
         return bdd;
     }
-
+/*
     public void setBdd(CBDD bdd) {
         this.bdd = bdd;
     }

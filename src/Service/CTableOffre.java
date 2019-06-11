@@ -51,7 +51,7 @@ public class CTableOffre {
     
     public int insert(COffre offre, int numRapport) {
 		
-        String req="insert into offrir(RAP_NUM_RAPPORT_VISITE,MED_DEPOTLEGAL_MEDICAMENT,OFF_QTE_OFFRIR) value('"
+        String req="insert into offrir(RAP_NUM_RAPPORT_VISITE,MED_DEPOT_LEGAL_MEDICAMENT,OFF_QTE_OFFRIR) value('"
                 +numRapport+"','"
 				+offre.getDepotLegalMedicament()+"','"
 				+offre.getQuantite()+"');";
